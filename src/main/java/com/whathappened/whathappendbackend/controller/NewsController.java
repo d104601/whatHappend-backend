@@ -18,6 +18,17 @@ public class NewsController {
         return newsService.getAllTrends(mkt);
     }
 
+    @GetMapping("/search")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public String getSearch(
+            @RequestParam String q,
+            @RequestParam String mkt,
+            @RequestParam String location,
+            @RequestParam String language
+    ) {
+        return newsService.getSearch(q, mkt, location, language);
+    }
+
 //    @GetMapping("/category")
 //    public List<Article> searchNewsByCategory(String category) {
 //

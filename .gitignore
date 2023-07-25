@@ -33,4 +33,5 @@ build/
 .vscode/
 
 ### Application.properties ###
-application-mongodb.properties
+application-database.properties
+application-other.properties

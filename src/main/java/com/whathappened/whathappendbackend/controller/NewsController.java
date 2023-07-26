@@ -22,11 +22,18 @@ public class NewsController {
     @CrossOrigin(origins = "http://localhost:3000")
     public String getSearch(
             @RequestParam String q,
-            @RequestParam String mkt,
             @RequestParam String location,
-            @RequestParam String language
+            @RequestParam String language,
+            @RequestParam int offset,
+            @RequestParam String freshness
     ) {
-        return newsService.getSearch(q, mkt, location, language);
+        // print all params
+        System.out.println("q: " + q);
+        System.out.println("location: " + location);
+        System.out.println("language: " + language);
+        System.out.println("offset: " + offset);
+        System.out.println("freshness: " + freshness);
+        return newsService.getSearch(q, location, language, offset, freshness);
     }
 
 //    @GetMapping("/category")

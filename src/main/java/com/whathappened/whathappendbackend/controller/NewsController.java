@@ -3,6 +3,8 @@ package com.whathappened.whathappendbackend.controller;
 import com.whathappened.whathappendbackend.service.NewsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/news")
 public class NewsController {
@@ -22,10 +24,10 @@ public class NewsController {
     @CrossOrigin(origins = "http://localhost:3000")
     public String getSearch(
             @RequestParam String q,
-            @RequestParam String location,
-            @RequestParam String language,
+            @RequestParam Optional<String> location,
+            @RequestParam Optional<String> language,
             @RequestParam int offset,
-            @RequestParam String freshness
+            @RequestParam Optional<String> freshness
     ) {
         // print all params
         System.out.println("q: " + q);

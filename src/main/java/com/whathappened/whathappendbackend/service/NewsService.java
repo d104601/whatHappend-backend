@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Getter
@@ -42,17 +42,16 @@ public class NewsService {
         return response.getBody();
     }
 
-    public String getSearch(String q, String location, String language, int offset, String freshness) {
+    public String getSearch(
+            String q,
+            Optional<String> location,
+            Optional<String> language,
+            int offset,
+            Optional<String> freshness) {
         StringBuilder url = new StringBuilder("https://api.bing.microsoft.com/v7.0/news/search?q=" + q + "&sortBy=Relevance&offset=" + offset);
-        if (!Objects.equals(location, "")) {
-            url.append("&mkt=").append(location);
-        }
-        if (!Objects.equals(language, "")) {
-            url.append("&language=").append(language);
-        }
-        if (!Objects.equals(freshness, "")) {
-            url.append("&freshness=").append(freshness);
-        }
+        location.ifPresent(s -> url.append("&mkt=").append(s));
+        language.ifPresent(s -> url.append("&setlang=").append(s));
+        freshness.ifPresent(s -> url.append("&freshness=").append(s));
 
         RestTemplate restTemplate = new RestTemplate();
         // apply key to header

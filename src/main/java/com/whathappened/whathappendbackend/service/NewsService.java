@@ -66,4 +66,23 @@ public class NewsService {
         // print out response
         return response.getBody();
     }
+
+    public String getNewsByCateogry(Optional<String> category, String mkt) {
+        StringBuilder url = new StringBuilder("https://api.bing.microsoft.com/v7.0/news");
+        url.append("?mkt=").append(mkt);
+        category.ifPresent(s -> url.append("&category=").append(s));
+
+        RestTemplate restTemplate = new RestTemplate();
+        // apply key to header
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/json");
+        headers.set("Ocp-Apim-Subscription-Key", apiKey);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // get response
+        ResponseEntity<String> response = restTemplate.exchange(url.toString(), HttpMethod.GET, entity, String.class);
+
+        // print out response
+        return response.getBody();
+    }
 }

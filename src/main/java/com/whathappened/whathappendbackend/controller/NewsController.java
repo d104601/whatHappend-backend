@@ -15,13 +15,11 @@ public class NewsController {
     }
 
     @GetMapping("/trend")
-    @CrossOrigin(origins = "http://localhost:3000")
     public String getTrend(@RequestParam String mkt) {
         return newsService.getAllTrends(mkt);
     }
 
     @GetMapping("/search")
-    @CrossOrigin(origins = "http://localhost:3000")
     public String getSearch(
             @RequestParam String q,
             @RequestParam Optional<String> location,
@@ -29,17 +27,10 @@ public class NewsController {
             @RequestParam int offset,
             @RequestParam Optional<String> freshness
     ) {
-        // print all params
-        System.out.println("q: " + q);
-        System.out.println("location: " + location);
-        System.out.println("language: " + language);
-        System.out.println("offset: " + offset);
-        System.out.println("freshness: " + freshness);
         return newsService.getSearch(q, location, language, offset, freshness);
     }
 
     @GetMapping("/category")
-    @CrossOrigin(origins = "http://localhost:3000")
     public String searchNewsByCategory(
             @RequestParam Optional<String> category,
             @RequestParam String mkt

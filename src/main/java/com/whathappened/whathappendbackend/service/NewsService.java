@@ -4,12 +4,9 @@ import com.whathappened.whathappendbackend.repository.NewsRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
 
@@ -28,18 +25,16 @@ public class NewsService {
     public String getAllTrends(String mkt) {
         String url = "https://api.bing.microsoft.com/v7.0/news/trendingtopics?mkt=" + mkt;
 
-        RestTemplate restTemplate = new RestTemplate();
-        // apply key to header
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        headers.set("Ocp-Apim-Subscription-Key", apiKey);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        WebClient webClient = WebClient.builder()
+                .baseUrl(url)
+                .defaultHeader(HttpHeaders.ACCEPT, "application/json")
+                .defaultHeader("Ocp-Apim-Subscription-Key", apiKey)
+                .build();
 
-        // get response
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-        // print out response
-        return response.getBody();
+        return webClient.get()
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
     }
 
     public String getSearch(
@@ -53,18 +48,16 @@ public class NewsService {
         language.ifPresent(s -> url.append("&setlang=").append(s));
         freshness.ifPresent(s -> url.append("&freshness=").append(s));
 
-        RestTemplate restTemplate = new RestTemplate();
-        // apply key to header
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        headers.set("Ocp-Apim-Subscription-Key", apiKey);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        WebClient webClient = WebClient.builder()
+                .baseUrl(url.toString())
+                .defaultHeader(HttpHeaders.ACCEPT, "application/json")
+                .defaultHeader("Ocp-Apim-Subscription-Key", apiKey)
+                .build();
 
-        // get response
-        ResponseEntity<String> response = restTemplate.exchange(url.toString(), HttpMethod.GET, entity, String.class);
-
-        // print out response
-        return response.getBody();
+        return webClient.get()
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
     }
 
     public String getNewsByCateogry(Optional<String> category, String mkt) {
@@ -72,17 +65,16 @@ public class NewsService {
         url.append("?mkt=").append(mkt);
         category.ifPresent(s -> url.append("&category=").append(s));
 
-        RestTemplate restTemplate = new RestTemplate();
-        // apply key to header
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        headers.set("Ocp-Apim-Subscription-Key", apiKey);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        // get response
-        ResponseEntity<String> response = restTemplate.exchange(url.toString(), HttpMethod.GET, entity, String.class);
+        WebClient webClient = WebClient.builder()
+                .baseUrl(url.toString())
+                .defaultHeader(HttpHeaders.ACCEPT, "application/json")
+                .defaultHeader("Ocp-Apim-Subscription-Key", apiKey)
+                .build();
 
-        // print out response
-        return response.getBody();
+        return webClient.get()
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
     }
 }

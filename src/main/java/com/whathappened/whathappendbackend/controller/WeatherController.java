@@ -13,13 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class WeatherController {
     WeatherService weatherService;
 
-    @GetMapping("/current")
-    public String getCurrentWeather(@RequestParam String city) {
+    @GetMapping()
+    public String getWeatherData(@RequestParam String city) {
         return weatherService.getCurrentWeather(city);
     }
-
-    @GetMapping("/forecast")
-    public String getForecastWeather(@RequestParam String city) {
-        return "forecast weather";
-    }
 }
+

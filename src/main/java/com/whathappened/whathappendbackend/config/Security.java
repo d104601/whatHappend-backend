@@ -14,4 +14,5 @@ public class Security implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowedOrigins("http://localhost:3000");
     }
+
 }

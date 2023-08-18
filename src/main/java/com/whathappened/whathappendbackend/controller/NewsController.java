@@ -37,9 +37,4 @@ public class NewsController {
     ) {
         return newsService.getNewsByCateogry(category, mkt);
     }
-//
-//    @GetMapping("/search")
-//    public List<Article> searchNewsByKeyword(String keyword) {
-//
-//    }
 }

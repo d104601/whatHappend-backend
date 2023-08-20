@@ -1,5 +1,6 @@
 package com.whathappened.whathappendbackend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +15,9 @@ import java.util.List;
 @Setter
 public class User {
     @Id
+    @JsonIgnore
     private String id;
+
     public String username;
     public String password;
     public String email;

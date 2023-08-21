@@ -1,39 +1,43 @@
 package com.whathappened.whathappendbackend.service;
 
 import com.whathappened.whathappendbackend.domain.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.whathappened.whathappendbackend.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class UserService {
-    // add temp userList
-    ArrayList<User> userList = new ArrayList<>();
-    // add password encoder from SecurityConfig
     BCryptPasswordEncoder passwordEncoder;
-
-    public UserService(BCryptPasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
+    UserRepository userRepository;
 
     public User registerUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userList.add(user);
+        userRepository.save(user);
         return user;
     }
 
-    public User login(String username, String password) {
-        for (User user : userList) {
-            if (user.getUsername().equals(username) && passwordEncoder.matches(password, user.getPassword())) {
+    public Optional<User> login(String username, String password) {
+        Optional<User> user;
+        // check if it's username or email
+        if(username.contains("@")) {
+            user = userRepository.findByEmail(username);
+        } else {
+            user = userRepository.findByUsername(username);
+        }
+        if (user.isPresent()) {
+            if (passwordEncoder.matches(password, user.get().getPassword())) {
                 return user;
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    public ArrayList<User> getAllUser() {
-        return userList;
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

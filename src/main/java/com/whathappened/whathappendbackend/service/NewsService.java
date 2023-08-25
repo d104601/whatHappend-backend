@@ -1,6 +1,8 @@
 package com.whathappened.whathappendbackend.service;
 
-import com.whathappened.whathappendbackend.repository.NewsRepository;
+import com.whathappened.whathappendbackend.domain.Article;
+import com.whathappened.whathappendbackend.domain.User;
+import com.whathappened.whathappendbackend.repository.UserRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,10 +20,10 @@ import java.util.Optional;
 public class NewsService {
     @Value("${api.bing.key}")
     private String apiKey;
-    private NewsRepository newsRepository;
+    private UserRepository userRepository;
 
-    public NewsService(NewsRepository newsRepository) {
-        this.newsRepository = newsRepository;
+    public NewsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public String getAllTrends(String mkt) {
@@ -76,5 +80,66 @@ public class NewsService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+    }
+
+    public User saveArticle(Article article, String username) {
+        try {
+            Optional<User> user = userRepository.findByUsername(username);
+            if (user.isPresent()) {
+                if (user.get().getArticles() == null) {
+                    user.get().setArticles(new ArrayList<>());
+                }
+                // check if article already exists
+                for (Article a : user.get().getArticles()) {
+                    if (a.getUrl().equals(article.getUrl())) {
+                        throw new RuntimeException("Article already saved");
+                    }
+                }
+                user.get().getArticles().add(article);
+                userRepository.save(user.get());
+                return user.get();
+            }
+            else {
+                throw new RuntimeException("Error: User not found");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
+    }
+
+    public List<Article> getSavedArticle(String username) {
+        try {
+            Optional<User> user = userRepository.findByUsername(username);
+            if (user.isPresent()) {
+                return user.get().getArticles();
+            }
+            else {
+                throw new RuntimeException("Error: User not found");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
+    }
+
+    public List<Article> removeArticle(String username, String url) {
+        try {
+            Optional<User> user = userRepository.findByUsername(username);
+            if (user.isPresent()) {
+                List<Article> articles = user.get().getArticles();
+                for (int i = 0; i < articles.size(); i++) {
+                    if (articles.get(i).getUrl().equals(url)) {
+                        articles.remove(i);
+                        userRepository.save(user.get());
+                        return articles;
+                    }
+                }
+                throw new RuntimeException("Error: Article not found");
+            }
+            else {
+                throw new RuntimeException("Error: User not found");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
     }
 }

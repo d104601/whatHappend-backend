@@ -6,11 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.whathappened.whathappendbackend.domain.User;
 import com.whathappened.whathappendbackend.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -18,11 +23,13 @@ public class UserController {
     UserService userService;
     Logger logger;
     JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
-    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider) {
+    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.logger = LoggerFactory.getLogger(UserController.class);
         this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping("/test")
@@ -32,29 +39,43 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User register(
-            @RequestBody User user) {
+    public ResponseEntity<?> register (
+            @RequestBody User user) throws RuntimeException {
         logger.info("method: register called");
         logger.info("received data: username: " + user.getUsername() + ", password: " + user.getPassword());
-        return userService.registerUser(user);
+
+        try {
+            userService.registerUser(user);
+            return ResponseEntity.ok("User registered successfully");
+        }
+        catch (RuntimeException e) {
+            logger.error("Error: ", e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody HashMap<String, String> credentials) {
+    public ResponseEntity<?> login(@RequestBody HashMap<String, String> credentials) throws AuthenticationException{
         logger.info("method: login called");
-        String username = credentials.get("username");
-        String password = credentials.get("password");
-        Optional<User> user = userService.login(username, password);
-        if (user.isPresent()) {
-            String token = jwtTokenProvider.createToken(username);
-            logger.info("user found, token created");
-            return LoginResponse.builder()
-                    .token(token)
-                    .code(200)
-                    .build();
-        } else {
-            logger.info("user not found");
-            return null;
+
+        try {
+            String username = credentials.get("username");
+            String password = credentials.get("password");
+
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
+
+            // if authentication is successful, create a jwt token and return it
+            // if bad credentials, return 401
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+            String jwt = jwtTokenProvider.createToken(userDetails.getUsername());
+            return ResponseEntity.ok(new LoginResponse(jwt, "login successful"));
+        }
+        // send 401 with message
+        catch (AuthenticationException e) {
+            logger.error("Error: ", e);
+            return ResponseEntity.badRequest().body("Invalid username or password");
         }
     }
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "user")
@@ -18,9 +19,10 @@ public class User {
     @JsonIgnore
     private String id;
 
-    public String username;
-    public String password;
-    public String email;
+    private String username;
+    private String password;
+    private String email;
+    private String role;
 
     List<Article> articles;
 
@@ -28,5 +30,6 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.articles = new ArrayList<>();
     }
 }

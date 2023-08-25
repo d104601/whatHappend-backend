@@ -1,11 +1,11 @@
 package com.whathappened.whathappendbackend.domain;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
-public class LoginResponse {
-    private String token;
+@Builder
+public class ResponseBody {
+    private Integer code;
     private String message;
 }

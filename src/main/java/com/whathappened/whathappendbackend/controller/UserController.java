@@ -32,10 +32,10 @@ public class UserController {
         this.authenticationManager = authenticationManager;
     }
 
-    @GetMapping("/test")
-    public List<User> test() {
+    @GetMapping("/")
+    public String test() {
         logger.info("test");
-        return userService.getAllUsers();
+        return "user controller is working";
     }
 
     @PostMapping("/register")

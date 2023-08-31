@@ -25,6 +25,12 @@ public class NewsController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    @GetMapping("/")
+    public String test() {
+        logger.info("test");
+        return "news controller is working";
+    }
+
     @GetMapping("/trend")
     public String getTrend(@RequestParam String mkt) {
         return newsService.getAllTrends(mkt);

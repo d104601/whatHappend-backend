@@ -18,7 +18,7 @@ import java.util.Optional;
 @Getter
 @Setter
 public class NewsService {
-    @Value("${api.bing.key}")
+    @Value("${api.rapidapi.key}")
     private String apiKey;
     private UserRepository userRepository;
 
@@ -27,12 +27,14 @@ public class NewsService {
     }
 
     public String getAllTrends(String mkt) {
-        String url = "https://api.bing.microsoft.com/v7.0/news/trendingtopics?mkt=" + mkt;
+        String url = "https://bing-news-search1.p.rapidapi.com/news/trendingtopics?safeSearch=Off&textFormat=Raw&mkt" + mkt;
 
         WebClient webClient = WebClient.builder()
                 .baseUrl(url)
                 .defaultHeader(HttpHeaders.ACCEPT, "application/json")
-                .defaultHeader("Ocp-Apim-Subscription-Key", apiKey)
+                .defaultHeader("X-BingApis-SDK", "true")
+                .defaultHeader("X-RapidAPI-Key", apiKey)
+                .defaultHeader("X-RapidAPI-Host", "bing-news-search1.p.rapidapi.com")
                 .build();
 
         return webClient.get()
@@ -47,7 +49,7 @@ public class NewsService {
             Optional<String> language,
             int offset,
             Optional<String> freshness) {
-        StringBuilder url = new StringBuilder("https://api.bing.microsoft.com/v7.0/news/search?q=" + q + "&sortBy=Relevance&offset=" + offset);
+        StringBuilder url = new StringBuilder("https://bing-news-search1.p.rapidapi.com/news/search?q=" + q + "&sortBy=Relevance&offset=" + offset);
         location.ifPresent(s -> url.append("&mkt=").append(s));
         language.ifPresent(s -> url.append("&setlang=").append(s));
         freshness.ifPresent(s -> url.append("&freshness=").append(s));
@@ -55,7 +57,9 @@ public class NewsService {
         WebClient webClient = WebClient.builder()
                 .baseUrl(url.toString())
                 .defaultHeader(HttpHeaders.ACCEPT, "application/json")
-                .defaultHeader("Ocp-Apim-Subscription-Key", apiKey)
+                .defaultHeader("X-BingApis-SDK", "true")
+                .defaultHeader("X-RapidAPI-Key", apiKey)
+                .defaultHeader("X-RapidAPI-Host", "bing-news-search1.p.rapidapi.com")
                 .build();
 
         return webClient.get()
@@ -65,7 +69,7 @@ public class NewsService {
     }
 
     public String getNewsByCateogry(Optional<String> category, String mkt) {
-        StringBuilder url = new StringBuilder("https://api.bing.microsoft.com/v7.0/news");
+        StringBuilder url = new StringBuilder("https://bing-news-search1.p.rapidapi.com/news");
         url.append("?mkt=").append(mkt);
         category.ifPresent(s -> url.append("&category=").append(s));
 
@@ -73,7 +77,9 @@ public class NewsService {
         WebClient webClient = WebClient.builder()
                 .baseUrl(url.toString())
                 .defaultHeader(HttpHeaders.ACCEPT, "application/json")
-                .defaultHeader("Ocp-Apim-Subscription-Key", apiKey)
+                .defaultHeader("X-BingApis-SDK", "true")
+                .defaultHeader("X-RapidAPI-Key", apiKey)
+                .defaultHeader("X-RapidAPI-Host", "bing-news-search1.p.rapidapi.com")
                 .build();
 
         return webClient.get()
@@ -92,7 +98,7 @@ public class NewsService {
                 // check if article already exists
                 for (Article a : user.get().getArticles()) {
                     if (a.getUrl().equals(article.getUrl())) {
-                        throw new RuntimeException("Article already saved");
+                        throw new RuntimeException("already saved");
                     }
                 }
                 user.get().getArticles().add(article);

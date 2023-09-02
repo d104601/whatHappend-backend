@@ -14,15 +14,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
-    // CORS
-    @Value("${cors.allowed-origins}")
-    private String[] allowedOrigins;
-
     UserDetailsServiceImpl userDetailService;
     private final AuthEntryPointJwt authEntryPointJwt;
 
@@ -54,11 +54,19 @@ public class SecurityConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
 
+    // CORS
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(httpServletRequest -> {
+                            CorsConfiguration corsConfiguration = new CorsConfiguration();
+                            corsConfiguration.setAllowedOrigins(List.of("*"));
+                            corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                            corsConfiguration.setAllowedHeaders(List.of("*"));
+                            return corsConfiguration;
+                        }
+                ))                .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement(
                 session -> session.sessionCreationPolicy(

@@ -66,9 +66,11 @@ public class NewsController {
             String token = tokenValue.split(" ")[1];
             String username = jwtTokenProvider.getUsernameFromToken(token);
             newsService.saveArticle(article, username);
-            return ResponseEntity.ok("Article saved successfully");
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            if(e.getMessage().equals("Error: already saved")) {
+                return ResponseEntity.ok("already saved");
+            }
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

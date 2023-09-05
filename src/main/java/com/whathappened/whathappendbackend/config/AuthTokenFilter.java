@@ -38,7 +38,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     endpoint.equals("/api/news/search") ||
                     endpoint.equals("/api/news/trend") ||
                     endpoint.equals("/api/news/category") ||
-                    endpoint.startsWith("/api/weather")) {
+                    endpoint.startsWith("/api/weather") ||
+                    endpoint.startsWith("/swagger-ui") ||
+                    endpoint.startsWith("/v3")) {
                 logger.info("endpoint: " + endpoint + " is public");
                 filterChain.doFilter(request, response);
             }
@@ -72,6 +74,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             logger.error("Cannot set user authentication: ", e);
         }
     }
+
 
     private String parseJwt(HttpServletRequest request) {
         Optional<String> Auth = Optional.ofNullable(request.getHeader("Authorization"));

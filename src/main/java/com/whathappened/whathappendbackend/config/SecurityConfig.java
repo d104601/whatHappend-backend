@@ -1,7 +1,6 @@
 package com.whathappened.whathappendbackend.config;
 
 import com.whathappened.whathappendbackend.service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -80,9 +79,11 @@ public class SecurityConfig implements WebMvcConfigurer {
                                 .requestMatchers("/api/user/register").permitAll()
                                 .requestMatchers("/api/user/login").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/user/test").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 }

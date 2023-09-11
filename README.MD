@@ -4,7 +4,9 @@ This is the repository for the backend of WhatHappened, a Spring Boot applicatio
 For the frontend application, please refer to [WhatHappened-frontend](https://github.com/d104601/whathappened-frontend).
 
 ## Getting Started
-The backend application is deployed on AWS EC2 through Elastic Beanstalk. To access the application deployed, please use frontend application deployed at [here](http://what-happened-frontend.s3-website-us-east-1.amazonaws.com/).
+~~The backend application is deployed on AWS EC2 through Elastic Beanstalk.~~</br>
+Due to the data transfer may exceed AWS free-tier. Backend application is deployed on fly.io with dockerized container.
+To access the application deployed, please use frontend application deployed at [here](http://what-happened-frontend.s3-website-us-east-1.amazonaws.com/).
 To run the application locally, please follow the instructions below.
 
 ### Prerequisites
